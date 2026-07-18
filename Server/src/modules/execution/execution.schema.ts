@@ -8,12 +8,6 @@ const workflowExecutionSchema = new Schema(
             required: true
         },
 
-        owner: {
-            type: Types.ObjectId,
-            ref: "User",
-            required: true
-        },
-
         status: {
             type: String,
             enum: [
@@ -35,7 +29,8 @@ const workflowExecutionSchema = new Schema(
         },
 
         currentNode: {
-            type: Number
+            type: String,
+            required: true
         },
 
         context: {
