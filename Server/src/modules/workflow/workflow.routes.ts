@@ -10,7 +10,7 @@ workflowRouter.get('/:workflowId', authMiddleware, workflowcontroller.getWorkflo
 
 workflowRouter.get('/', authMiddleware, workflowcontroller.getAllWorkflows)
 
-workflowRouter.put('/', authMiddleware, workflowcontroller.updateWorkflow)
+workflowRouter.put('/:workflowId', authMiddleware, workflowcontroller.updateWorkflow)
 
 workflowRouter.delete('/:workflowId', authMiddleware, workflowcontroller.deleteWorkflow)
 

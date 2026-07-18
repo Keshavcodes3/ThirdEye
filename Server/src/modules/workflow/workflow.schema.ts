@@ -1,5 +1,31 @@
 import { Schema, model, Types } from "mongoose";
 
+
+
+const nodeSchema = new Schema(
+  {
+    id: String,
+    type: String,
+    position: {
+      x: Number,
+      y: Number,
+    },
+    data: Schema.Types.Mixed,
+  },
+  { _id: false }
+);
+
+const edgeSchema = new Schema(
+  {
+    id: String,
+    source: String,
+    target: String,
+    sourceHandle: String,
+    targetHandle: String,
+  },
+  { _id: false }
+);
+
 const workflowSchema = new Schema(
   {
     owner: {
@@ -39,34 +65,15 @@ const workflowSchema = new Schema(
       },
     },
 
-    nodes: [
-      {
-        id: String,
+    nodes: {
+      type: [nodeSchema],
+      default: []
+    },
 
-        type: String,
-
-        position: {
-          x: Number,
-          y: Number,
-        },
-
-        data: Schema.Types.Mixed,
-      },
-    ],
-
-    edges: [
-      {
-        id: String,
-
-        source: String,
-
-        target: String,
-
-        sourceHandle: String,
-
-        targetHandle: String,
-      },
-    ],
+    edges: {
+      type: [edgeSchema],
+      default: []
+    },
 
     settings: {
       retryCount: {

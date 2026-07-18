@@ -50,12 +50,19 @@ class workflowrepository {
       edges: payload.edges || workflow.edges,
       settings: payload.settings || workflow.settings
     }
-    const UpdatedWorkflow = await workflowModel.findOneAndUpdate({
-      owner: payload.owner,
-      _id: payload.workflowId
-    }, query, {
-      new: true
-    })
+    const UpdatedWorkflow = await workflowModel.findOneAndUpdate(
+      {
+        owner: payload.owner,
+        _id: payload.workflowId,
+      },
+      {
+        $set: query,
+      },
+      {
+        returnDocument: "after",
+        runValidators: true,
+      }
+    );
     if (!UpdatedWorkflow) return null
     return UpdatedWorkflow
   }
