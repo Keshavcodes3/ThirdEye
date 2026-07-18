@@ -4,12 +4,18 @@ import { ApiError } from "../utils/ApiError.js";
 import type { JWTPayload } from "../modules/auth/auth.types.js";
 import { ENV } from "../config/env.js";
 
-export interface AuthenticatedRequest extends Request {
-  user: JWTPayload;
+declare global {
+  namespace Express {
+    interface Request {
+      user: JWTPayload;
+    }
+  }
 }
 
+export interface AuthenticatedRequest extends Request { }
+
 export const authMiddleware = (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
