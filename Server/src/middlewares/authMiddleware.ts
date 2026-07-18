@@ -14,7 +14,6 @@ export const authMiddleware = (
   next: NextFunction
 ) => {
   const token = req.cookies?.token || req.header("Authorization")?.replace("Bearer ", "");
-
   if (!token) {
     throw new ApiError(401, "Unauthorized: No token provided");
   }
