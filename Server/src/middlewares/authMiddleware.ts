@@ -1,8 +1,8 @@
-import { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { ApiError } from "../utils/ApiError";
-import { JWTPayload } from "../modules/auth/auth.types";
-import { ENV } from "../config/env";
+import { ApiError } from "../utils/ApiError.js";
+import type { JWTPayload } from "../modules/auth/auth.types.js";
+import { ENV } from "../config/env.js";
 
 export interface AuthenticatedRequest extends Request {
   user: JWTPayload;
@@ -13,7 +13,7 @@ export const authMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
+  const token = req.cookies?.token || req.header("Authorization")?.replace("Bearer ", "");
 
   if (!token) {
     throw new ApiError(401, "Unauthorized: No token provided");
