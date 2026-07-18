@@ -1,111 +1,53 @@
-import { Schema, model, Types } from "mongoose";
+import { Types } from "mongoose";
 
-const workflowSchema = new Schema(
-  {
-    owner: {
-      type: Types.ObjectId,
-      ref: "User",
-      required: true,
-      index: true,
-    },
+export type WorkflowStatus =
+    | "draft"
+    | "active"
+    | "paused"
+    | "archived";
 
-    name: {
-      type: String,
-      required: true,
-      trim: true,
-    },
+export type WorkflowTrigger = {
+    type: "manual" | "cron" | "webhook";
+    cronExpression?: string | null;
+};
 
-    description: {
-      type: String,
-      default: "",
-    },
+export interface NodePosition {
+    x: number;
+    y: number;
+}
 
-    status: {
-      type: String,
-      enum: ["draft", "active", "paused", "archived"],
-      default: "draft",
-    },
+export interface WorkflowNode {
+    id: string;
+    type: string;
+    position: NodePosition;
+    data: Record<string, unknown>;
+}
 
-    trigger: {
-      type: {
-        type: String,
-        enum: ["manual", "cron", "webhook"],
-        default: "manual",
-      },
+export interface WorkflowEdge {
+    id: string;
+    source: string;
+    target: string;
+    sourceHandle?: string;
+    targetHandle?: string;
+}
 
-      cronExpression: {
-        type: String,
-        default: null,
-      },
-    },
+export interface WorkflowSettings {
+    retryCount?: number;
+    timeout?: number;
+    continueOnFailure?: boolean;
+}
 
-    nodes: [
-      {
-        id: String,
+export interface UpdateWorkflowDTO {
+    workflowId: Types.ObjectId;
+    owner: Types.ObjectId ,
 
-        type: String,
+    name?: string;
+    description?: string;
+    status?: WorkflowStatus;
+    trigger?: WorkflowTrigger;
 
-        position: {
-          x: Number,
-          y: Number,
-        },
+    nodes?: WorkflowNode[];
+    edges?: WorkflowEdge[];
 
-        data: Schema.Types.Mixed,
-      },
-    ],
-
-    edges: [
-      {
-        id: String,
-
-        source: String,
-
-        target: String,
-
-        sourceHandle: String,
-
-        targetHandle: String,
-      },
-    ],
-
-    settings: {
-      retryCount: {
-        type: Number,
-        default: 3,
-      },
-
-      timeout: {
-        type: Number,
-        default: 30000,
-      },
-
-      continueOnFailure: {
-        type: Boolean,
-        default: false,
-      },
-    },
-
-    lastExecutedAt: Date,
-
-    totalExecutions: {
-      type: Number,
-      default: 0,
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
-
-
-workflowSchema.index(
-  { owner: 1, name: 1 },
-  { unique: true }
-);
-
-
-const workflowModel = model("Workflow", workflowSchema);
-
-
-
-export default workflowModel
+    settings?: WorkflowSettings;
+}
