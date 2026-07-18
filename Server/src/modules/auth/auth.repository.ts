@@ -8,14 +8,13 @@ class AuthRepository {
   //?create user
   async createUser(payload: Partial<IUser>) {
     const user = await userModel.create(payload)
-    if(user) throw new ApiError(400,"user already exist")
     return user
   }
-  
+
   //?find By Email
   async findUserByEmail(email: string) {
-    const user = await userModel.findOne({ email: email })
-    if (!user) throw new ApiError(404, "User Not found")
+    const user = await userModel.findOne({ email: email }).select('+password')
+    if (!user) return null
     return user
   }
 
