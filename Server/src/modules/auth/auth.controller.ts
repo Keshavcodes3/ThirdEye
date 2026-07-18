@@ -37,10 +37,13 @@ class authController {
         apiSuccessResponse(200, "user logged in successfully")
 
     })
+
     getUser = asyncHandler(async (req: Request, res: Response) => {
-        const userId=(req as any).userId
-        if(!userId) throw new ApiError(400,"userID not found , log in first")
-            
+        const userId = (req as any).userId
+        if (!userId) throw new ApiError(400, "userID not found , log in first")
+        const user = await authRepository.findById(userId)
+        if (!user) throw new ApiError(404, "user not found")
+        apiSuccessResponse(200, "user found successfully", user)
     })
 
 }
