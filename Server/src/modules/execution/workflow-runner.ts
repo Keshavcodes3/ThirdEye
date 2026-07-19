@@ -9,48 +9,119 @@ class workflowRunner {
     }
     async run() {
         let currentNodeId = this.execution.currentNode;
+
         while (currentNodeId) {
-            let currentNode = this.workflow.nodes.find((node: any) => node.id == currentNodeId)
-            if (!currentNode) throw new ApiError(400, "current node not found")
-            const output=await this.executeNode(currentNode)
-            this.execution.context[currentNode.id]=output
-            await this.execution.save()
-            currentNodeId = this.getNextNode(currentNodeId)
-            if(currentNode.type=="end"){
-                return "end";
+
+            const currentNode = this.workflow.nodes.find(
+                (n: any) => n.id === currentNodeId
+            );
+
+            if (!currentNode) {
+                throw new ApiError(404, "Node not found");
             }
+
+            const output = await this.executeNode(currentNode);
+
+            this.execution.context[currentNode.id] = output;
+
+            if (currentNode.type === "end") {
+                this.execution.status = "success";
+                await this.execution.save();
+                break;
+            }
+
+            const nextNodeId = this.getNextNode(currentNode.id);
+
+            if (!nextNodeId) {
+                this.execution.status = "success";
+                await this.execution.save();
+                break;
+            }
+            try {
+                const startedAt = new Date();
+
+                const output = await this.executeNode(currentNode);
+
+                const finishedAt = new Date();
+
+                this.execution.context[currentNode.id] = output;
+
+                this.execution.logs.push({
+                    nodeId: currentNode.id,
+                    nodeType: currentNode.type,
+                    status: "success",
+                    startedAt,
+                    finishedAt,
+                    output
+                });
+
+            } catch (err: any) {
+                const startedAt = new Date();
+
+                this.execution.logs.push({
+                    nodeId: currentNode.id,
+                    nodeType: currentNode.type,
+                    status: "failed",
+                    startedAt,
+                    finishedAt: new Date(),
+                    error: err.message
+                });
+
+                this.execution.status = "failed";
+
+                await this.execution.save();
+
+                throw err;
+            }
+            this.execution.currentNode = nextNodeId;
+            currentNodeId = nextNodeId;
+
+            await this.execution.save();
         }
 
     }
-    private async getNextNode(nodeId: string) {
-        const edge = this.workflow.edges.find((edge: any) => edge.source == nodeId)
-        if (!edge) {
-            throw new ApiError(400, "Edge not found")
-        }
-        return edge.target
+    private getNextNode(nodeId: string) {
+        const edge = this.workflow.edges.find(
+            (edge: any) => edge.source === nodeId
+        );
+
+        if (!edge) return null;
+
+        return edge.target;
     }
 
     private async executeNode(node: any) {
-        switch(node.type){
-            case "start" :
+        switch (node.type) {
+            case "start":
                 //start karo node ko
                 console.log('start')
+
+                return "start"
+                break
             case "browser":
                 // open karo browser ko from given url
                 console.log('fetching from ' + node.data.url)
+                return node.data.url
+                break
             case "scrap":
                 //scrap karo given url ko
-                console.log('scrapping from '+node.data.url)
+                console.log('scrapping from ' + node.data.url)
+                return node.data.url
+                break
             case "email":
                 console.log('bhej diiyaa mail')
-                //email bhejo jisme logged in hein
+                return "mail sent"
+                break
+            //email bhejo jisme logged in hein
             case "end":
                 console.log('khtanm')
-                //workflow end , Database mein save karo
+                return "khtm"
+                break
+            //workflow end , Database mein save karo
             default:
                 //rehne de
                 console.log('rehne de')
-            
+
         }
 
     }
