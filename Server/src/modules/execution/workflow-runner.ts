@@ -12,10 +12,14 @@ class workflowRunner {
         while (currentNodeId) {
             let currentNode = this.workflow.nodes.find((node: any) => node.id == currentNodeId)
             if (!currentNode) throw new ApiError(400, "current node not found")
+            const output=await this.executeNode(currentNode)
+            this.execution.context[currentNode.id]=output
+            await this.execution.save()
+            currentNodeId = this.getNextNode(currentNodeId)
+            if(currentNode.type=="end"){
+                return "end";
+            }
         }
-
-        currentNodeId = this.getNextNode(currentNodeId)
-
 
     }
     private async getNextNode(nodeId: string) {
@@ -27,22 +31,29 @@ class workflowRunner {
     }
 
     private async executeNode(node: any) {
-        const nodeType=node.type
-        switch(nodeType){
+        switch(node.type){
             case "start" :
                 //start karo node ko
+                console.log('start')
             case "browser":
                 // open karo browser ko from given url
+                console.log('fetching from ' + node.data.url)
             case "scrap":
                 //scrap karo given url ko
+                console.log('scrapping from '+node.data.url)
             case "email":
+                console.log('bhej diiyaa mail')
                 //email bhejo jisme logged in hein
             case "end":
+                console.log('khtanm')
                 //workflow end , Database mein save karo
             default:
                 //rehne de
+                console.log('rehne de')
             
         }
 
     }
 }
+
+export default workflowRunner
