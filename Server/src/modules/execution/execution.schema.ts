@@ -57,6 +57,10 @@ const workflowExecutionSchema = new Schema(
 
                 finishedAt: Date,
 
+                duration: Number,
+
+                input: Schema.Types.Mixed,
+
                 output: Schema.Types.Mixed,
 
                 error: String

@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npx tsx watch server.ts"
   },
   "keywords": [],
@@ -12,6 +11,7 @@
   "license": "ISC",
   "type": "module",
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@types/bcrypt": "^6.0.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/cookie-parser": "^1.4.10",
@@ -41,6 +41,9 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.7.4",
     "morgan": "^1.11.0",
+    "puppeteer-core": "^25.3.0",
+    "resend": "^6.17.2",
+    "ts-web-scraper": "^0.1.4",
     "zod": "^4.4.3"
   }
 }

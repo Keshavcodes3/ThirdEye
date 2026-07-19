@@ -42,8 +42,9 @@ class workflowController {
   })
 
   updateWorkflow = asyncHandler(async (req: Request, res: Response) => {
-    const {name, description, status, trigger, nodes, edges, settings } = req.body
-    const workflowId=req.params.workflowId
+    const { name, description, status, trigger, nodes, edges, settings } = req.body
+    const workflowId = req.params.workflowId
+
     if (!workflowId) throw new ApiError(400, "Workflow Id not found")
     const updatedWorkflow = await workflowRepository.updateWorkflow({
       workflowId: new Types.ObjectId(workflowId),
