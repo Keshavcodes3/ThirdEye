@@ -132,12 +132,12 @@ class WorkflowRunner {
     ): Promise<unknown> {
         // Resolution order: node-level > workflow-level > defaults
         const retryCount =
-            node.data.retryCount ??
+            node.data?.retryCount ??
             this.workflow.settings?.retryCount ??
             DEFAULT_RETRY_COUNT;
 
         const timeoutMs =
-            node.data.timeout ??
+            node.data?.timeout ??
             this.workflow.settings?.timeout ??
             DEFAULT_TIMEOUT_MS;
 
@@ -251,6 +251,9 @@ class WorkflowRunner {
         const node = this.workflow.nodes.find((n) => n.id === id);
         if (!node) {
             throw new Error(`Node not found in workflow graph: "${id}"`);
+        }
+        if (!node.data) {
+            node.data = {};
         }
         return node;
     }
