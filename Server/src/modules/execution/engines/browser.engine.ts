@@ -12,18 +12,27 @@ class BrowserEngine implements IEngine {
         context: ExecutionContext,
         runtimeContext: RuntimeContext
     ): Promise<{ url: string }> {
-        const browser = await puppeteer.launch({
-            executablePath:
-                process.env.CHROME_PATH ||
-                "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+        const executablePath =
+            process.env.CHROME_PATH ||
+            "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
 
-            headless: (node.data.headless as boolean | "shell") ?? true,
-
-            args: [
-                "--no-sandbox",
-                "--disable-setuid-sandbox",
-            ],
-        });
+        let browser;
+        try {
+            browser = await puppeteer.launch({
+                executablePath,
+                headless: (node.data.headless as boolean | "shell") ?? true,
+                args: [
+                    "--no-sandbox",
+                    "--disable-setuid-sandbox",
+                ],
+            });
+        } catch (launchError) {
+            const message =
+                launchError instanceof Error ? launchError.message : String(launchError);
+            throw new Error(
+                `Failed to launch Chrome at "${executablePath}": ${message}`
+            );
+        }
 
         try {
             const page = await browser.newPage();
@@ -37,8 +46,6 @@ class BrowserEngine implements IEngine {
                 waitUntil: "networkidle2",
                 timeout: 60000,
             });
-
-            // Store in runtimeContext — NOT in MongoDB context
             runtimeContext.browser = browser;
             runtimeContext.page = page;
 
@@ -54,4 +61,4 @@ class BrowserEngine implements IEngine {
 
 const browserEngine = new BrowserEngine();
 
-export default browserEngine;
+export default browserEngine;
