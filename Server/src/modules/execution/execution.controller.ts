@@ -17,8 +17,8 @@ class ExecutionController {
 
         const execution = await executionService.startExecution(workflowId);
 
-        return res.status(202).json(
-            apiSuccessResponse(202, "Workflow execution started", execution)
+        return res.status(200).json(
+            apiSuccessResponse(200, "Workflow execution completed", execution)
         );
     });
 

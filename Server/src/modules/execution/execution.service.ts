@@ -32,12 +32,14 @@ class ExecutionService {
         // For now, we execute in memory but we do not await it here so the API responds quickly.
         const runner = new WorkflowRunner(workflow, execution);
         
-        // We catch errors from the runner here so they don't crash the Node.js process as unhandled rejections
-        runner.run().catch(err => {
+        try {
+            await runner.run();
+        } catch (err) {
             console.error(`Workflow execution ${execution._id} failed:`, err);
-        });
+        }
 
-        return execution;
+        const updatedExecution = await executionRepository.findExecutionById(execution._id);
+        return updatedExecution || execution;
     }
 
     async getExecutionById(executionId: string) {
