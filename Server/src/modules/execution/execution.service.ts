@@ -27,11 +27,9 @@ class ExecutionService {
             context: {},
         });
 
-        // Run in background / parallel to response
-        // Note: in a production distributed environment this would go to a message queue like RabbitMQ or Redis BullMQ.
-        // For now, we execute in memory but we do not await it here so the API responds quickly.
+        // Await the full workflow run so the API responds with the final result.
         const runner = new WorkflowRunner(workflow, execution);
-        
+
         try {
             await runner.run();
         } catch (err) {
